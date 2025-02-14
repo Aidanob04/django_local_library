@@ -33,32 +33,6 @@ class Genre(models.Model):
         ]
 
 
-class Language(models.Model):
-    """Model representing a language."""
-    name = models.CharField(
-        max_length=200,
-        unique=True,
-        help_text="Enter the book's original language (e.g. English, Spanish, French, etc.)"
-    )
-
-    def __str__(self):
-        """String for representing the Model object."""
-        return self.name
-
-    def get_absolute_url(self):
-        """Returns the url to access a particular language instance."""
-        return reverse('language-detail', args=[str(self.id)])
-    
-    class Meta:
-        constraints = [
-            UniqueConstraint(
-                Lower('name'),
-                name='language_name_case_insensitive_unique',
-                violation_error_message = "Language already exists (case insensitive match)"
-            ),
-        ]
-
-
 class Book(models.Model):
     """Model representing a book (but not a specific copy of a book)."""
     title = models.CharField(max_length=200)
@@ -77,6 +51,7 @@ class Book(models.Model):
     # Genre class has already been defined so we can specify the object above.
     genre = models.ManyToManyField(
         Genre, help_text="Select a genre for this book")
+    language = models.ForeignKey('Language', on_delete=models.RESTRICT, null=True)
 
     def __str__(self):
         """String for representing the Model object."""
@@ -139,3 +114,28 @@ class Author(models.Model):
         """String for representing the Model object."""
         return f'{self.last_name}, {self.first_name}'
 
+
+class Language(models.Model):
+    """Model representing a language."""
+    name = models.CharField(
+        max_length=200,
+        unique=True,
+        help_text="Enter the book's original language (e.g. English, Spanish, French, etc.)"
+    )
+
+    def __str__(self):
+        """String for representing the Model object."""
+        return self.name
+
+    def get_absolute_url(self):
+        """Returns the url to access a particular language instance."""
+        return reverse('language-detail', args=[str(self.id)])
+    
+    class Meta:
+        constraints = [
+            UniqueConstraint(
+                Lower('name'),
+                name='language_name_case_insensitive_unique',
+                violation_error_message = "Language already exists (case insensitive match)"
+            ),
+        ]
